@@ -1,5 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getProject, runCommand } from "../controllers/projects";
+import { getProject, runCommand } from "../../controllers/projects";
+import { initializeQueue } from "../../controllers/queue";
+
+let isWatcherStarted = false;
+if (!isWatcherStarted) {
+  initializeQueue();
+  isWatcherStarted = true;
+}
 
 export default async function handler(
   req: NextApiRequest,

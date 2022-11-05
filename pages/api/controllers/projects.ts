@@ -2,6 +2,7 @@ import { copyFile, readFile, writeFile } from "fs/promises";
 import { resolve } from "path";
 import { replaceEncodedText } from "../utils/encoding";
 import { buildXml, getChild, parseXml } from "../utils/xml";
+import { InMemoryVideoStore } from "./queue";
 
 export interface EditorCommand {
   action: "replace";
@@ -50,7 +51,7 @@ export async function runCommand(
 
   if (updatedProject) {
     const savedPath = await saveUpdatedProject(updatedProject, projectId);
-    await generateVideo(savedPath);
+    await generateVideo(savedPath, projectId);
   }
 
   return updatedProject;
@@ -67,12 +68,23 @@ export async function saveUpdatedProject(project: any, projectId: string) {
     fileName
   );
 
+  setProjectName(project, `${projectId}@${versionId}`);
   await writeFile(pathToXml, buildXml(project));
 
   return pathToXml;
 }
 
-export async function generateVideo(xmlPath: string) {
+function setProjectName(project: any, updatedName: string) {
+  const xmeml = getChild("xmeml", project);
+  const sequence = getChild("sequence", xmeml);
+  const name = getChild("name", sequence);
+  name[0] = {'#text': updatedName}
+
+  return project;
+}
+
+export async function generateVideo(xmlPath: string, projectId: string) {
+  InMemoryVideoStore.setVideoStatus(projectId, 'rendering');
   return copyFile(xmlPath, PATH_TO_QUEUE + '/' + xmlPath.split('/').pop());
 }
 
