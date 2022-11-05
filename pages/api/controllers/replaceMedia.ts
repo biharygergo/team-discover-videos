@@ -9,7 +9,7 @@ const imageExtensions = [".jpg", ".jpeg", ".png", ".JPG", ".JPEG"];
 const imageExtension = ".png";
 const videoExtension = ".mp4";
 
-export function replaceVideo(
+export function replaceMedia(
   project: any,
   command: EditorCommand,
   projectId: string,

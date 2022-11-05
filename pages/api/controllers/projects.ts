@@ -3,13 +3,14 @@ import { resolve } from "path";
 import { buildXml, getChild, parseXml } from "../utils/xml";
 import { InMemoryVideoStore } from "./queue";
 import { replaceText } from "./replaceText";
-import { replaceVideo } from "./replaceVideo";
+import { replaceMedia } from "./replaceMedia";
 import { translateText } from "./translateText";
+import { replaceAudio } from "./replaceAudio";
 
 export interface EditorCommand {
   action: "replace" | "translate";
   time: number;
-  type: "text" | "video" | "image";
+  type: "text" | "video" | "image" | "audio";
   value: string;
 }
 
@@ -60,7 +61,7 @@ export async function runCommand(
           success = result.replaced;
           break;
         case "video":
-          const videoResult = replaceVideo(
+          const videoResult = replaceMedia(
             parsedProject,
             command,
             projectId,
@@ -70,7 +71,7 @@ export async function runCommand(
           success = videoResult.foundVideoToReplace;
           break;
         case "image":
-          const imageResult = replaceVideo(
+          const imageResult = replaceMedia(
             parsedProject,
             command,
             projectId,
@@ -79,6 +80,15 @@ export async function runCommand(
           updatedProject = imageResult.project;
           success = imageResult.foundVideoToReplace;
           break;
+        case "audio":
+            const audioResult = replaceAudio(
+              parsedProject,
+              command,
+              projectId
+            );
+            updatedProject = audioResult.project;
+            success = audioResult.foundAudioToReplace;
+            break;
       }
       break;
     case "translate":

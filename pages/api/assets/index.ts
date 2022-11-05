@@ -18,6 +18,7 @@ export default async function handler(
 ) {
   const files = await readdir(join(PATH_TO_ASSETS, "videos"));
   const imageFiles = await readdir(join(PATH_TO_ASSETS, "images"));
+  const musicFiles = await readdir(join(PATH_TO_ASSETS, "music"));
 
   const catalog: AssetCatalogItem[] = files.map((path) => {
     const assetId = path.split(".")![0];
@@ -35,6 +36,15 @@ export default async function handler(
       id: assetId,
       imageUrl: `/api/assets/images/${assetId}`,
       type: "image",
+    });
+  });
+
+  musicFiles.forEach((musicPath) => {
+    const assetId = musicPath.split(".")![0];
+    catalog.push({
+      id: assetId,
+      imageUrl: `/api/assets/music/${assetId}`,
+      type: "audio",
     });
   });
 
