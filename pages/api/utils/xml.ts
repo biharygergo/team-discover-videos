@@ -1,5 +1,5 @@
 import * as format from "xml-formatter";
-import {create} from 'xmlbuilder2';
+import { create } from "xmlbuilder2";
 import { XMLParser, XMLBuilder } from "fast-xml-parser";
 const options = {
   alwaysCreateTextNode: true,
@@ -15,8 +15,8 @@ const parser = new XMLParser(options);
 const builder = new XMLBuilder(options);
 
 export function parseXml(xml: string) {
-    const parsedXml = parser.parse(xml);
-    return parsedXml;
+  const parsedXml = parser.parse(xml);
+  return parsedXml;
 }
 
 export function buildXml(parsedXml: any) {
@@ -25,18 +25,21 @@ export function buildXml(parsedXml: any) {
   withDocType.splice(1, 0, "<!DOCTYPE xmeml>");
   const finalXml = withDocType.join("\n");
   return format(finalXml, { indentation: "\t", collapseContent: true });
-  
 }
 
-export function getChild(childKey: string, funkyJson?: {[objectKey: string]: any}[]): any {
-    if (!funkyJson) return undefined;
-    const results = funkyJson.filter(child => child.hasOwnProperty(childKey));
+export function getChild(
+  childKey: string,
+  funkyJson?: { [objectKey: string]: any }[],
+  keepArray: boolean = false
+): any {
+  if (!funkyJson) return undefined;
+  const results = funkyJson.filter((child) => child.hasOwnProperty(childKey));
 
-    if (results.length > 1) {
-        return results;
-    } else if (results.length) {
-        return results[0]?.[childKey];
-    }
+  if (results.length > 1 || (results && keepArray)) {
+    return results;
+  } else if (results.length) {
+    return results[0]?.[childKey];
+  }
 
-    return undefined;
+  return undefined;
 }

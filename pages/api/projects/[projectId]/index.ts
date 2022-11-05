@@ -26,7 +26,6 @@ export default async function handler(
     }
   } else if (req.method === "PUT") {
     const command = req.body;
-    console.log(command)
     const updatedProject = await runCommand(command, projectId, versionId);
     return res.send(updatedProject);
     

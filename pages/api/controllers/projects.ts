@@ -1,6 +1,7 @@
 import { copyFile, readFile, writeFile } from "fs/promises";
 import { resolve } from "path";
 import { replaceEncodedText } from "../utils/encoding";
+import { overlapsIntervalFrames } from "../utils/time";
 import { buildXml, getChild, parseXml } from "../utils/xml";
 import { InMemoryVideoStore } from "./queue";
 
@@ -96,11 +97,19 @@ function modifyText(project: any, command: EditorCommand) {
   const tracks = getChild("track", video);
 
   tracks.forEach((track: any) => {
-    const clipItems = getChild("clipitem", track.track);
-
+    const clipItems = getChild("clipitem", track.track, true);
     clipItems?.forEach((clipItem: any) => {
+      const filter = getChild("filter", clipItem.clipitem);
+      if (!filter) return;
 
-      const filter = clipItem.clipitem ? getChild("filter", clipItem.clipitem): clipItem.filter;
+      const start = getChild('#text', getChild("start", clipItem.clipitem));
+      const end = getChild('#text', getChild("end", clipItem.clipitem));
+
+      if(!overlapsIntervalFrames(start, end, command.time)) {
+        console.log('Does not overlap filter');
+        return;
+      }
+
       const effect = getChild("effect", filter);
       const parameters = getChild("parameter", effect);
 
@@ -112,11 +121,9 @@ function modifyText(project: any, command: EditorCommand) {
       });
 
       if (textValueParameter) {
-        console.log(textValueParameter);
         const value = getChild("value", textValueParameter.parameter);
         const updatedValue = replaceEncodedText(value[0]['#text'], command.value, '');
         value[0] = {'#text': updatedValue}
-        console.log('updated value', value);
       }
     });
 

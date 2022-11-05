@@ -5,6 +5,7 @@ import { readdirSync } from "fs";
 const PATH_TO_QUEUE = resolve("pages", "api", "data", "queue", "Output");
 
 type VideoStatus = "rendering" | "done";
+
 interface VideoStoreItem {
   latestFile: string;
   previousFiles: string[];
@@ -29,7 +30,6 @@ export class VideoStore {
   }
 
   getItem(projectId: string) {
-    console.log(this.store);
     if (!this.store[projectId]) {
       this.store[projectId] = {
         latestFile: "",
@@ -56,7 +56,7 @@ export const InMemoryVideoStore = new VideoStore();
 
 export function initializeQueue() {
   const watcher = chokidar.watch(PATH_TO_QUEUE, {
-    ignored: /(^|[\/\\])\../, // ignore dotfiles
+    ignored: /(^|[\/\\])\../, 
     ignoreInitial: true,
   });
 
@@ -69,6 +69,5 @@ export function initializeQueue() {
     InMemoryVideoStore.addNewVideo(projectId, path);
     InMemoryVideoStore.setVideoStatus(projectId, "done");
 
-    console.log(`${path} has been added`);
   });
 }
