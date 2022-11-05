@@ -26,7 +26,7 @@ export function replaceText(project: any, command: EditorCommand) {
           const end = getChild("#text", getChild("end", clipItem.clipitem));
   
           if (!overlapsIntervalFrames(start, end, command.time)) {
-            console.log("Does not overlap filter");
+            // console.log("Does not overlap filter");
             return;
           }
   
