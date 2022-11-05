@@ -6,9 +6,10 @@ export const PATH_TO_ASSETS = resolve("pages", "api", "data", "assets");
 
 export interface AssetCatalogItem {
   id: string;
-  videoUrl: string;
-  thumbnailUrl: string;
-  type: "video" | "audio";
+  videoUrl?: string;
+  thumbnailUrl?: string;
+  imageUrl?: string;
+  type: "video" | "audio" | "image";
 }
 
 export default async function handler(
@@ -16,6 +17,8 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const files = await readdir(join(PATH_TO_ASSETS, "videos"));
+  const imageFiles = await readdir(join(PATH_TO_ASSETS, "images"));
+
   const catalog: AssetCatalogItem[] = files.map((path) => {
     const assetId = path.split(".")![0];
     return {
@@ -24,6 +27,15 @@ export default async function handler(
       thumbnailUrl: `/api/assets/thumbnails/${assetId}`,
       type: "video",
     };
+  });
+
+  imageFiles.forEach((imagePath) => {
+    const assetId = imagePath.split(".")![0];
+    catalog.push({
+      id: assetId,
+      imageUrl: `/api/assets/images/${assetId}`,
+      type: "image",
+    });
   });
 
   return res.json(catalog);

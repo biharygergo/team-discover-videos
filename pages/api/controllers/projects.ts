@@ -1,4 +1,4 @@
-import { copyFile, readdir, readFile, writeFile } from "fs/promises";
+import { copyFile, mkdir, readdir, readFile, writeFile } from "fs/promises";
 import { resolve } from "path";
 import { buildXml, getChild, parseXml } from "../utils/xml";
 import { InMemoryVideoStore } from "./queue";
@@ -9,7 +9,7 @@ import { translateText } from "./translateText";
 export interface EditorCommand {
   action: "replace" | "translate";
   time: number;
-  type: "text" | "media";
+  type: "text" | "video" | "image";
   value: string;
 }
 
@@ -23,7 +23,7 @@ export async function getLatestVersionId(projectId: string) {
 
   const lastVersionPath = versionPaths.pop();
 
-  return lastVersionPath?.split('.')[0];
+  return lastVersionPath?.split(".")[0];
 }
 
 export async function getProject(projectId: string, versionId?: string) {
@@ -59,10 +59,25 @@ export async function runCommand(
           updatedProject = result.project;
           success = result.replaced;
           break;
-        case "media":
-          const videoResult = replaceVideo(parsedProject, command, projectId);
+        case "video":
+          const videoResult = replaceVideo(
+            parsedProject,
+            command,
+            projectId,
+            "video"
+          );
           updatedProject = videoResult.project;
           success = videoResult.foundVideoToReplace;
+          break;
+        case "image":
+          const imageResult = replaceVideo(
+            parsedProject,
+            command,
+            projectId,
+            "image"
+          );
+          updatedProject = imageResult.project;
+          success = imageResult.foundVideoToReplace;
           break;
       }
       break;
@@ -112,4 +127,24 @@ function setProjectName(project: any, updatedName: string) {
 export async function generateVideo(xmlPath: string, projectId: string) {
   InMemoryVideoStore.setVideoStatus(projectId, "rendering");
   return copyFile(xmlPath, PATH_TO_QUEUE + "/" + xmlPath.split("/").pop());
+}
+
+export async function createSandboxProject() {
+  const sandboxId = `sandbox_${Date.now()}`;
+  const newSandboxPath = resolve(PATH_TO_DATA, "projects", sandboxId);
+  await mkdir(newSandboxPath);
+  await mkdir(resolve(newSandboxPath, "original"));
+  await mkdir(resolve(newSandboxPath, "versions"));
+
+  const pathToNewSandboxXml = resolve(
+    newSandboxPath,
+    "original",
+    "project.xml"
+  );
+
+  const sandboxProject = await getProject("sandbox");
+  await setProjectName(sandboxProject, sandboxId);
+  await writeFile(pathToNewSandboxXml, buildXml(sandboxProject));
+
+  return sandboxId;
 }
