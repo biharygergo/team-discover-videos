@@ -1,6 +1,6 @@
-import * as format from "xml-formatter";
-import { create } from "xmlbuilder2";
+import format from "xml-formatter";
 import { XMLParser, XMLBuilder } from "fast-xml-parser";
+
 const options = {
   alwaysCreateTextNode: true,
   ignoreAttributes: false,

@@ -1,12 +1,13 @@
-import { copyFile, readFile, writeFile } from "fs/promises";
+import { copyFile, readdir, readFile, writeFile } from "fs/promises";
 import { resolve } from "path";
 import { buildXml, getChild, parseXml } from "../utils/xml";
 import { InMemoryVideoStore } from "./queue";
 import { replaceText } from "./replaceText";
 import { replaceVideo } from "./replaceVideo";
+import { translateText } from "./translateText";
 
 export interface EditorCommand {
-  action: "replace";
+  action: "replace" | "translate";
   time: number;
   type: "text" | "media";
   value: string;
@@ -14,6 +15,16 @@ export interface EditorCommand {
 
 export const PATH_TO_DATA = resolve("pages", "api", "data");
 export const PATH_TO_QUEUE = resolve("pages", "api", "data", "queue");
+
+export async function getLatestVersionId(projectId: string) {
+  const versionPaths = await readdir(
+    resolve(PATH_TO_DATA, "projects", projectId, "versions")
+  );
+
+  const lastVersionPath = versionPaths.pop();
+
+  return lastVersionPath?.split('.')[0];
+}
 
 export async function getProject(projectId: string, versionId?: string) {
   const versionParts = versionId
@@ -55,6 +66,11 @@ export async function runCommand(
           break;
       }
       break;
+    case "translate":
+      const result = await translateText(parsedProject, command);
+      updatedProject = result.project;
+      success = result.replaced;
+      break;
     default:
       throw new Error("This command is not supported");
   }
@@ -64,7 +80,7 @@ export async function runCommand(
     await generateVideo(savedPath, projectId);
   }
 
-  return {success, updatedProject};
+  return { success, updatedProject };
 }
 
 export async function saveUpdatedProject(project: any, projectId: string) {
