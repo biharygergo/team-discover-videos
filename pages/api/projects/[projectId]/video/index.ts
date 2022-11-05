@@ -1,9 +1,12 @@
 import { createReadStream } from "fs";
 import { stat } from "fs/promises";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getProject, runCommand } from "../../../controllers/projects";
 import { InMemoryVideoStore } from "../../../controllers/queue";
-
+export const config = {
+  api: {
+    responseLimit: false,
+  },
+};
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -12,14 +15,14 @@ export default async function handler(
   const media = req.query.media as string | undefined;
   if (req.method === "GET") {
     try {
-        const videoItem = InMemoryVideoStore.getItem(projectId);
+      const videoItem = InMemoryVideoStore.getItem(projectId);
       if (!media) {
         return res.json(videoItem);
       } else {
         const fileStat = await stat(videoItem.latestFile);
 
         res.writeHead(200, {
-          "Content-Type": "audio/mpeg",
+          "Content-Type": "video/mp4",
           "Content-Length": fileStat.size,
         });
 

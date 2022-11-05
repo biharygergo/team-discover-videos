@@ -1,19 +1,19 @@
 import { copyFile, readFile, writeFile } from "fs/promises";
 import { resolve } from "path";
-import { replaceEncodedText } from "../utils/encoding";
-import { overlapsIntervalFrames } from "../utils/time";
 import { buildXml, getChild, parseXml } from "../utils/xml";
 import { InMemoryVideoStore } from "./queue";
+import { replaceText } from "./replaceText";
+import { replaceVideo } from "./replaceVideo";
 
 export interface EditorCommand {
   action: "replace";
   time: number;
-  type: "text";
+  type: "text" | "media";
   value: string;
 }
 
-const PATH_TO_DATA = resolve("pages", "api", "data");
-const PATH_TO_QUEUE = resolve("pages", "api", "data", "queue");
+export const PATH_TO_DATA = resolve("pages", "api", "data");
+export const PATH_TO_QUEUE = resolve("pages", "api", "data", "queue");
 
 export async function getProject(projectId: string, versionId?: string) {
   const versionParts = versionId
@@ -38,11 +38,20 @@ export async function runCommand(
 ) {
   const parsedProject = await getProject(projectId, versionId);
   let updatedProject = undefined;
+  let success = false;
+
   switch (command.action) {
     case "replace":
       switch (command.type) {
         case "text":
-          updatedProject = modifyText(parsedProject, command);
+          const result = replaceText(parsedProject, command);
+          updatedProject = result.project;
+          success = result.replaced;
+          break;
+        case "media":
+          const videoResult = replaceVideo(parsedProject, command, projectId);
+          updatedProject = videoResult.project;
+          success = videoResult.foundVideoToReplace;
           break;
       }
       break;
@@ -50,12 +59,12 @@ export async function runCommand(
       throw new Error("This command is not supported");
   }
 
-  if (updatedProject) {
+  if (success) {
     const savedPath = await saveUpdatedProject(updatedProject, projectId);
     await generateVideo(savedPath, projectId);
   }
 
-  return updatedProject;
+  return {success, updatedProject};
 }
 
 export async function saveUpdatedProject(project: any, projectId: string) {
@@ -65,7 +74,7 @@ export async function saveUpdatedProject(project: any, projectId: string) {
     PATH_TO_DATA,
     "projects",
     projectId,
-    'versions',
+    "versions",
     fileName
   );
 
@@ -79,55 +88,12 @@ function setProjectName(project: any, updatedName: string) {
   const xmeml = getChild("xmeml", project);
   const sequence = getChild("sequence", xmeml);
   const name = getChild("name", sequence);
-  name[0] = {'#text': updatedName}
+  name[0] = { "#text": updatedName };
 
   return project;
 }
 
 export async function generateVideo(xmlPath: string, projectId: string) {
-  InMemoryVideoStore.setVideoStatus(projectId, 'rendering');
-  return copyFile(xmlPath, PATH_TO_QUEUE + '/' + xmlPath.split('/').pop());
-}
-
-function modifyText(project: any, command: EditorCommand) {
-  const xmeml = getChild("xmeml", project);
-  const sequence = getChild("sequence", xmeml);
-  const media = getChild("media", sequence);
-  const video = getChild("video", media);
-  const tracks = getChild("track", video);
-
-  tracks.forEach((track: any) => {
-    const clipItems = getChild("clipitem", track.track, true);
-    clipItems?.forEach((clipItem: any) => {
-      const filter = getChild("filter", clipItem.clipitem);
-      if (!filter) return;
-
-      const start = getChild('#text', getChild("start", clipItem.clipitem));
-      const end = getChild('#text', getChild("end", clipItem.clipitem));
-
-      if(!overlapsIntervalFrames(start, end, command.time)) {
-        console.log('Does not overlap filter');
-        return;
-      }
-
-      const effect = getChild("effect", filter);
-      const parameters = getChild("parameter", effect);
-
-      const textValueParameter = parameters?.find((parameter: any) => {
-        const parameterId = getChild("parameterid", parameter.parameter);
-        const id = getChild("#text", parameterId);
-
-        return id === 1;
-      });
-
-      if (textValueParameter) {
-        const value = getChild("value", textValueParameter.parameter);
-        const updatedValue = replaceEncodedText(value[0]['#text'], command.value, '');
-        value[0] = {'#text': updatedValue}
-      }
-    });
-
-  });
-
-  return project;
+  InMemoryVideoStore.setVideoStatus(projectId, "rendering");
+  return copyFile(xmlPath, PATH_TO_QUEUE + "/" + xmlPath.split("/").pop());
 }
