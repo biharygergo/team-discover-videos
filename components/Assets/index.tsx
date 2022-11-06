@@ -15,8 +15,8 @@ import {
 import { Image, Text } from "@chakra-ui/react";
 import { BACKEND_URL } from "../../config";
 import { AddIcon, Icon } from "@chakra-ui/icons";
-import { IoMdPhotos } from "react-icons/Io";
-
+/* import { IoMdPhotos } from "react-icons/Io";
+ */
 import {
   TbGripVertical,
   TbLock,
@@ -51,8 +51,8 @@ const Assets = () => {
           paddingTop={4}
           fontWeight={600}
         >
-          <Icon as={IoMdPhotos} fontSize={18} color="#8E8E8E" marginBottom={-0.5} marginRight={1}></Icon> Project
-          Library
+{/*           <Icon as={IoMdPhotos} fontSize={18} color="#8E8E8E" marginBottom={-0.5} marginRight={1}></Icon> Project
+ */}          Library
         </Text>
       </HStack>
 
