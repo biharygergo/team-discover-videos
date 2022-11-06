@@ -113,7 +113,7 @@ export default function Home() {
           </Box> */}
           <Box>
             <Text color={"gray.400"}>
-              If it's your first time here, please validate access to NgRok
+              If it&apos;s your first time here, please validate access to NgRok
               first.
             </Text>
             <Link

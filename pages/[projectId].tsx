@@ -49,7 +49,7 @@ export default function Home() {
 
     if (projectId) {
       dispatch(setProjectId({ projectId: projectId as string }));
-      dispatch(getVideo(projectId));
+      dispatch(getVideo());
     }
 
     const interval = setInterval(() => {

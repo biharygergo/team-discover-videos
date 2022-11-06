@@ -208,7 +208,7 @@ const Tracks = ({ video, audio, ratio }: any) => {
 
 export const Sequence = () => {
   const dispatch = useAppDispatch();
-  const { media, duration } = useSelector(selectMedia);
+  const { media, duration } = useSelector(selectMedia) as any;
   const isPlaying = useSelector(selectIsPlaying);
   const playedRatio = useSelector(selectPlayedRatio);
   const [sequenceRef, { width, height }] = useElementSize();
@@ -229,8 +229,8 @@ export const Sequence = () => {
 
   const { video, audio } = useMemo(() => {
     return {
-      video: media.video.track.filter((track) => track.clipitem),
-      audio: media.audio.track.filter((track) => track.clipitem),
+      video: media.video.track.filter((track: any) => track.clipitem),
+      audio: media.audio.track.filter((track: any) => track.clipitem),
     };
   }, [(media as any).tracks]);
 

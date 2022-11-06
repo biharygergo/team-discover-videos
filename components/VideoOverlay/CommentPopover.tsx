@@ -70,7 +70,7 @@ export const CommandPopover = ({ comment, size }: Props) => {
   const [error, setError] = useState(false);
   const assets = useSelector(selectAssets);
   const [selectedAsset, setSelectedAsset] = useState<null | string>(null);
-  const { media, duration } = useSelector(selectMedia);
+  const { media, duration } = useSelector(selectMedia) as any;
   const playedRatio = useSelector(selectPlayedRatio);
 
   const durationFrame = useMemo(() => {
