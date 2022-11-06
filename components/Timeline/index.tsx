@@ -215,6 +215,8 @@ export const Sequence = () => {
   }, [duration]);
 
   const onDrag = (event: any) => {
+    console.log('onDrag');
+    
     dispatch(updateProgress({ playedRatio: event.x / width }));
   };
 
@@ -262,18 +264,19 @@ export const Sequence = () => {
           <Draggable
             axis="x"
             handle=".handle"
-            defaultPosition={{ x: playedRatio * width, y: 0 }}
+            defaultPosition={{ x: trackInfoWidth + (width-trackInfoWidth) * playedRatio, y: 0 }}
+            // position={{x:trackInfoWidth + (width-trackInfoWidth) * playedRatio, y: 0}}
             // bounds="parent"
             // style={{}}
             // position={null}
-            grid={[25, 25]}
+            // grid={[25, 25]}
             scale={1}
             // onStart={this.handleStart}
             onDrag={onDrag}
             // onStop={(event) =>console.log(event)
           >
             <Box
-              bgColor="red"
+              bgColor="green"
               className="handle"
               position="absolute"
               bottom={0}

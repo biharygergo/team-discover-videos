@@ -79,6 +79,7 @@ export const videosSlice = createSlice({
       state.isPlaying = true;
     },
     stopVideo: (state) => {
+      console.log("stopVideo");
       state.isPlaying = false;
     },
     updateProgress: (
@@ -86,6 +87,9 @@ export const videosSlice = createSlice({
       action: PayloadAction<{ playedRatio: number; playedSeconds?: number }>
     ) => {
       state.playedRatio = action.payload.playedRatio;
+
+      console.log('updateProgress',action.payload.playedRatio );
+      
 
       if (action.payload.playedSeconds) {
         state.playedSeconds = action.payload.playedSeconds;

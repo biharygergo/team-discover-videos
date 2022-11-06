@@ -288,6 +288,7 @@ export const CommandPopover = ({ comment, size }: Props) => {
                             onChange={(event) =>
                               setSelectedAsset(event.target.value)
                             }
+                            defaultValue={assetOptions.length > 0 ? assetOptions[0].id : ''}
                           >
                             {assetOptions.map((o: any) => (
                               <option value={o.id} key={o.id}>

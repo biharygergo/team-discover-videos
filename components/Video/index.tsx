@@ -44,11 +44,19 @@ export const Video = (props: Props) => {
 
   useEffect(() => {
     if (!isPlaying && videoRef.current) {
-      (videoRef.current as any).seekTo(playedRatio);
+      console.log('Seeking to', playedRatio);
+      
+      //(videoRef.current as any).seekTo(playedRatio, 'fraction');
     }
   }, [playedRatio, isPlaying]);
 
   const onProgress = (progress: any) => {
+    console.log('Video.onProgress', progress.played, isPlaying);
+
+    if (!isPlaying) {
+      return;
+    }
+    
     dispatch(
       updateProgress({
         playedRatio: progress.played,
@@ -70,10 +78,10 @@ export const Video = (props: Props) => {
       style={{margin: 'auto', marginBottom: 0, marginTop: 0}}
       controls={false}
       onProgress={onProgress}
-      onStart={() => dispatch(startVideo())}
+      // onStart={() => dispatch(startVideo())}
       onEnded={() => {
         dispatch(stopVideo());
-        dispatch(updateProgress({ playedRatio: 0 }));
+        // dispatch(updateProgress({ playedRatio: 0 }));
       }}
       onPause={() => dispatch(stopVideo())}
     />
