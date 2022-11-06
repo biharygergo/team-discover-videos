@@ -10,8 +10,8 @@ import { extendTheme } from '@chakra-ui/react'
 const colors = {
   styles: {
     global: {
-      'html, body': {
-        backgroundColor: '#0C0C0C',
+      body: {
+        bg: '#0C0C0C',
       }
     },
   },

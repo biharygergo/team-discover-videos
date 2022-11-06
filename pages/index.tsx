@@ -50,14 +50,15 @@ export default function Home() {
           fontWeight={600}
           fontSize={{ base: "2xl", sm: "4xl", md: "6xl" }}
           lineHeight={"110%"}
+          color="white"
         >
           Test our video editor
           <br />
-          <Text as={"span"} color={"green.400"}>
+          <Text as={"span"} color={"#28E29F"}>
             with a sandbox project!
           </Text>
         </Heading>
-        <Text color={"gray.500"}>
+        <Text color={"white"}>
           This video editor will create your own copy of a sandbox project,
           where you are able to play around with many of the editor&apos;s features.
           Try changing text, replacing footage, images or audio. You can explore
@@ -73,7 +74,7 @@ export default function Home() {
         >
           <Button
             colorScheme={"green"}
-            bg={"green.400"}
+            bg={"#EB6E52"}
             rounded={"full"}
             px={6}
             _hover={{
@@ -88,19 +89,19 @@ export default function Home() {
           <Box>
             <Icon
               as={Arrow}
-              color={useColorModeValue("gray.800", "gray.300")}
+              color="white"
               w={71}
               position={"absolute"}
               right={-71}
               top={"10px"}
             />
             <Text
-              fontSize={"lg"}
-              fontFamily={"Caveat"}
+              fontSize={"md"}
               position={"absolute"}
               right={"-125px"}
               top={"-15px"}
               transform={"rotate(10deg)"}
+              color="white"
             >
               Yes, click this button.
             </Text>
@@ -108,18 +109,21 @@ export default function Home() {
         </Stack>
       </Stack>
       <Stack
-        bg={useColorModeValue("gray.50", "gray.800")}
+        bg="gray.800"
         py={16}
         px={8}
         spacing={{ base: 8, md: 10 }}
         align={"center"}
         direction={"column"}
         as={Box}
+        borderRadius="lg"
+        mb={16}
       >
         <Text
           fontSize={{ base: "xl", md: "2xl" }}
           textAlign={"center"}
           maxW={"3xl"}
+          color="gray.100"
         >
           This is the most amazing Video Editor I&apos;ve seen (that was created in
           less than 48 hours). One could say it is production-ready, but they
@@ -133,10 +137,10 @@ export default function Home() {
             mb={2}
           />
 
-          <Text fontWeight={600}>Jenny Wilson</Text>
+          <Text fontWeight={600} color="gray.100">Jenny Wilson</Text>
           <Text
             fontSize={"sm"}
-            color={useColorModeValue("gray.400", "gray.400")}
+            color="gray.300"
           >
             Fictional Customer
           </Text>
