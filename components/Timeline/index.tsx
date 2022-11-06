@@ -6,6 +6,7 @@ import {
   Text,
   Spacer,
   Icon,
+  Kbd,
 } from "@chakra-ui/react";
 import React, { useMemo, useCallback } from "react";
 import { useSelector } from "react-redux";
@@ -100,7 +101,6 @@ const Track = ({
         paddingRight={0}
         bgColor="#1B1A1D"
         alignItems="center"
-        
       >
         <TbGripVertical color="#8E8E8E" size={18} />
         <Text color="#8E8E8E" fontSize={14} marginLeft={2}>
@@ -180,7 +180,11 @@ const TimeIndicator = () => {
 const Tracks = ({ video, audio, ratio }: any) => {
   return (
     <>
-      <Flex direction="column-reverse" borderTop="1px solid #8E8E8E" paddingTop={1}>
+      <Flex
+        direction="column-reverse"
+        borderTop="1px solid #8E8E8E"
+        paddingTop={1}
+      >
         {video.map((track: Track, index: number) => (
           <Track
             track={track}
@@ -218,8 +222,8 @@ export const Sequence = () => {
   }, [duration]);
 
   const onDrag = (event: any) => {
-    console.log('onDrag');
-    
+    console.log("onDrag");
+
     dispatch(updateProgress({ playedRatio: event.x / width }));
   };
 
@@ -267,7 +271,10 @@ export const Sequence = () => {
           <Draggable
             axis="x"
             handle=".handle"
-            defaultPosition={{ x: trackInfoWidth + (width-trackInfoWidth) * playedRatio, y: 0 }}
+            defaultPosition={{
+              x: trackInfoWidth + (width - trackInfoWidth) * playedRatio,
+              y: 0,
+            }}
             // position={{x:trackInfoWidth + (width-trackInfoWidth) * playedRatio, y: 0}}
             // bounds="parent"
             // style={{}}
@@ -290,12 +297,20 @@ export const Sequence = () => {
         )}
       />
 
-      <Box  marginTop={4} marginBottom={4}>
-      <Text fontSize={24} marginLeft={10} color="#52EAEB" as="b">{`00:${String(Math.floor(seconds)).padStart(
-        2,
-        "0"
-      )}:${String((30 * (seconds % 1)).toFixed(0)).padStart(2, "0")}`}</Text>
-      </Box>
+      <Flex marginTop={4} marginBottom={4} direction="row" alignItems="center">
+        <Text
+          fontSize={24}
+          marginLeft={10}
+          color="#52EAEB"
+          as="b"
+        >{`00:${String(Math.floor(seconds)).padStart(2, "0")}:${String(
+          (30 * (seconds % 1)).toFixed(0)
+        ).padStart(2, "0")}`}</Text>
+        <Spacer />
+        <Text color="white" marginRight={4}>
+          Press <Kbd color="black">Space</Kbd> to start the video.
+        </Text>
+      </Flex>
       <Flex direction="column" ref={sequenceRef}>
         <Tracks ratio={ratio} video={video} audio={audio} />
       </Flex>

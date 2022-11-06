@@ -34,6 +34,7 @@ import Assets from "../components/Assets";
 import Control from "../components/Control";
 import { useRouter } from "next/router";
 import If from "../components/If";
+import { fetchAssets } from "../redux/slices/assets";
 
 export default function Home() {
   const dispatch = useAppDispatch();
@@ -50,6 +51,7 @@ export default function Home() {
     if (projectId) {
       dispatch(setProjectId({ projectId: projectId as string }));
       dispatch(getVideo(projectId as string));
+      dispatch(fetchAssets());
     }
 
     const interval = setInterval(() => {

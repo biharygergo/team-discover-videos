@@ -7,6 +7,7 @@ import { BACKEND_URL } from "../../config";
 
 export const fetchAssets = createAsyncThunk("assets/fetchAll", async () => {
   const response = await axios.get(`${BACKEND_URL}/api/assets`, {headers: {"ngrok-skip-browser-warning": "69420"}});
+
   return response.data;
 });
 
@@ -28,38 +29,7 @@ interface AssetsState {
 }
 
 const initialState = {
-  byId: _.keyBy([
-    {
-      id: "brainstorming",
-      videoUrl: "/api/assets/videos/brainstorming",
-      thumbnailUrl: "/api/assets/thumbnails/brainstorming",
-      type: "video",
-    },
-    {
-      id: "coding",
-      videoUrl: "/api/assets/videos/coding",
-      thumbnailUrl: "/api/assets/thumbnails/coding",
-      type: "video",
-    },
-    {
-      id: "hacker",
-      videoUrl: "/api/assets/videos/hacker",
-      thumbnailUrl: "/api/assets/thumbnails/hacker",
-      type: "video",
-    },
-    {
-      id: "matrix",
-      videoUrl: "/api/assets/videos/matrix",
-      thumbnailUrl: "/api/assets/thumbnails/matrix",
-      type: "video",
-    },
-    {
-      id: "thinking",
-      videoUrl: "/api/assets/videos/thinking",
-      thumbnailUrl: "/api/assets/thumbnails/thinking",
-      type: "video",
-    },
-  ], 'id'),
+  byId: {}
 } as AssetsState;
 
 export const assetsSlice = createSlice({
@@ -68,6 +38,7 @@ export const assetsSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(fetchAssets.fulfilled, (state, action) => {
+
       state.byId = _.keyBy(action.payload, "id");
     });
   },
