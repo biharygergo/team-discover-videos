@@ -75,7 +75,7 @@ export default function Home() {
         justifyContent="top"
       >
         {/* <div> */}
-        <VideoOverlay />
+        {!isPlaying && <VideoOverlay />}
         <Video />
         {/* </div> */}
         <Control />

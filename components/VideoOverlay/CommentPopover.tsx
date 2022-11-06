@@ -1,10 +1,12 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
-import { CheckIcon } from "@chakra-ui/icons";
+import React, { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { CheckIcon, Icon } from "@chakra-ui/icons";
 // @ts-ignore
 import useKeypress from "react-use-keypress";
+import { SyncLoader } from "react-spinners";
 
 import {
   Popover,
+  Flex,
   PopoverTrigger,
   PopoverContent,
   PopoverHeader,
@@ -23,11 +25,20 @@ import {
   Divider,
   Kbd,
   HStack,
+  Textarea,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  VStack,
+  FormControl,
+  FormLabel,
+  Select,
 } from "@chakra-ui/react";
 import {
   closeComment,
   Comment,
   CommentState,
+  deleteComment,
   openComment,
   selectOpenComment,
   updateComment,
@@ -35,9 +46,14 @@ import {
 import { useAppDispatch } from "../../redux/store";
 import { useSelector } from "react-redux";
 import { ClientRequest } from "http";
-import { processCommand } from "../../ai/command-processor";
+import { FootageType, processCommand } from "../../ai/command-processor";
 import If from "../If";
-import { pollVideo, updateVideo } from "../../redux/slices/video";
+import { pollVideo, selectMedia, selectPlayedRatio, updateVideo } from "../../redux/slices/video";
+// import { FaComment, FaRegComment } from "react-icons/fa";
+import { MdChatBubbleOutline, MdChatBubble } from "react-icons/md";
+import { GrReturn } from "react-icons/gr";
+import _ from "lodash-es";
+import { Assett, selectAssets } from "../../redux/slices/assets";
 
 interface Props {
   comment: Comment;
@@ -45,11 +61,31 @@ interface Props {
 }
 
 export const CommandPopover = ({ comment, size }: Props) => {
-  const [open, setOpen] = useState(false);
+  // const [open, setOpen] = useState(false);
   const [text, setText] = useState("");
-  const [commentState, setCommentState] = useState("");
+  // const [commentState, setCommentState] = useState("");
   const dispatch = useAppDispatch();
   const openCommentId = useSelector(selectOpenComment);
+  const [processing, setProcessing] = useState(false);
+  const [error, setError] = useState(false);
+  const assets = useSelector(selectAssets);
+  const [selectedAsset, setSelectedAsset] = useState<null | string>(null);
+  const { media, duration } = useSelector(selectMedia);
+  const playedRatio = useSelector(selectPlayedRatio);
+
+  const durationFrame = useMemo(() => {
+    return  parseInt(duration["_text"], 10)
+  }, [duration]);
+
+  const assetOptions = useMemo(() => {
+    if (comment && comment.command) {
+      return Object.values(assets).filter(
+        (a: any) => a.type === comment.command?.type
+      );
+    }
+
+    return [];
+  }, [comment, assets]);
 
   const onToggle = (event: any) => {
     event.stopPropagation();
@@ -66,8 +102,9 @@ export const CommandPopover = ({ comment, size }: Props) => {
   };
 
   useKeypress("Enter", () => {
+    setError(false);
     if (openCommentId === comment.id) {
-      console.log(text);
+      setProcessing(true);
       dispatch(
         updateComment({
           id: comment.id,
@@ -76,23 +113,27 @@ export const CommandPopover = ({ comment, size }: Props) => {
       );
       const command = processCommand(text);
 
-      if (!command) {
-        return;
-      }
+      setTimeout(() => {
+        setProcessing(false);
+        if (!command) {
+          setError(true);
+          return;
+        }
 
-      // TODO: error state
-      dispatch(
-        updateComment({
-          id: comment.id,
-          state: CommentState.Detected,
-          command: {
-            ...command,
-            time: 1, // TODO: get this from player
-          },
-        })
-      );
+        // TODO: error state
+        dispatch(
+          updateComment({
+            id: comment.id,
+            state: CommentState.Detected,
+            command: {
+              ...command,
+              time: 1, // TODO: get this from player
+            },
+          })
+        );
 
-      dispatch(pollVideo())
+        dispatch(pollVideo());
+      }, 1500);
     }
   });
 
@@ -102,8 +143,19 @@ export const CommandPopover = ({ comment, size }: Props) => {
   };
 
   const onConfirm = async () => {
+    const time = durationFrame / 30 * playedRatio;
     if (comment.command !== null && comment.command !== undefined) {
-      await dispatch(updateVideo(comment.command));
+      if (comment.command.type === FootageType.Text) {
+        await dispatch(updateVideo({...comment.command, time}));
+      } else {
+        await dispatch(
+          updateVideo({ ...comment.command, value: selectedAsset, time })
+        );
+        setSelectedAsset(null);
+      }
+
+      dispatch(closeComment())
+      dispatch(deleteComment(comment.id))
     }
   };
 
@@ -127,44 +179,134 @@ export const CommandPopover = ({ comment, size }: Props) => {
           left={comment.x * size.width}
           onClick={onToggle}
         >
-          <Button colorScheme={openCommentId === comment.id ? "blue" : ""}>
-            Open
-          </Button>
+          {/* <Button colorScheme={openCommentId === comment.id ? "blue" : ""}> */}
+          {/* Open */}
+          {/* </Button> */}
+          <Icon
+            as={
+              openCommentId === comment.id ? MdChatBubble : MdChatBubbleOutline
+            }
+            fontSize={40}
+            color={openCommentId === comment.id ? "#52EAEB" : "white"}
+          ></Icon>
         </Box>
       </PopoverTrigger>
       <PopoverContent onClick={(e) => e.stopPropagation()}>
         <PopoverArrow />
-        <PopoverHeader>Confirmation!</PopoverHeader>
+        <PopoverHeader>Change request</PopoverHeader>
+        <PopoverCloseButton />
         <PopoverBody>
           <If
             condition={comment.state === CommentState.RawInput}
             then={() => (
-              <InputGroup>
-                <Input
-                  placeholder="Basic usage"
-                  color="black"
-                  onChange={onType}
-                  value={text}
-                />
-                <InputRightElement>
-                  <CheckIcon color="green.500" />
-                </InputRightElement>
-              </InputGroup>
+              <If
+                condition={processing}
+                then={() => (
+                  <Flex
+                    w="100%"
+                    h="100px"
+                    justifyContent="center"
+                    alignItems="center"
+                  >
+                    <SyncLoader color="#52EAEB" speedMultiplier={0.75} />
+                  </Flex>
+                )}
+                else={() => (
+                  <If
+                    condition={error}
+                    then={() => (
+                      <Alert status="warning">
+                        <AlertIcon />
+                        <Flex direction="column">
+                          <strong>Our AI is not there yet.</strong>
+                          <span>Please try a different prompt!</span>
+                          <Button
+                            bgColor="#28E29F"
+                            onClick={() => setError(false)}
+                            marginTop={4}
+                          >
+                            Retry
+                          </Button>
+                        </Flex>
+                      </Alert>
+                    )}
+                    else={() => (
+                      <InputGroup>
+                        <Textarea
+                          placeholder="Replace title with Junction 2023"
+                          color="black"
+                          onChange={onType}
+                          value={text}
+                          height={20}
+                          style={{ resize: "none" }}
+                        />
+                        <InputRightElement>
+                          <GrReturn color="#8E8E8E" />
+                        </InputRightElement>
+                      </InputGroup>
+                    )}
+                  />
+                )}
+              />
             )}
           />
           <If
             condition={comment.state === CommentState.Detected}
             then={() => (
               <>
-                <Text color="black">{comment.rawText}</Text>
-                <Divider />
-                <HStack spacing="8px" color="black">
-                  <Kbd>{comment.command?.action}</Kbd>
-                  <Kbd>{comment.command?.type}</Kbd>
-                  <Text color="black">with</Text>
-                  <Kbd>{comment.command?.value}</Kbd>
-                </HStack>
-                <Button colorScheme="blue" onClick={onConfirm}>Confirm</Button>
+                <Text as="b">Your Prompt</Text>:<br />
+                <Text as="i">{comment.rawText}</Text>
+                <br />
+                <br />
+                <Text as="b">Recognized Command</Text>:<br />
+                <VStack spacing={2} alignItems="start" marginTop={2}>
+                  <Text>
+                    Action: <Kbd>{_.capitalize(comment.command?.action)}</Kbd>
+                  </Text>
+                  <Text>
+                    Footage: <Kbd>{_.capitalize(comment.command?.type)}</Kbd>
+                  </Text>
+                  <If
+                    condition={true}
+                    then={() => {
+                      if (comment.command?.type === FootageType.Text) {
+                        return (
+                          <Text>
+                            New value: <Kbd>{comment.command?.value}</Kbd>
+                          </Text>
+                        );
+                      }
+
+                      return (
+                        <FormControl>
+                          <Text>
+                            Select {_.capitalize(comment.command?.type)}:
+                          </Text>
+                          <Select
+                            placeholder="Select option"
+                            onChange={(event) =>
+                              setSelectedAsset(event.target.value)
+                            }
+                          >
+                            {assetOptions.map((o: any) => (
+                              <option value={o.id} key={o.id}>
+                                {o.id}
+                              </option>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      );
+                    }}
+                  />
+                </VStack>
+                <Button
+                  bgColor="#28E29F"
+                  onClick={onConfirm}
+                  w="100%"
+                  marginTop={8}
+                >
+                  Apply Change
+                </Button>
               </>
             )}
           />

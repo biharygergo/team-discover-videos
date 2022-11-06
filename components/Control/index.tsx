@@ -1,6 +1,6 @@
 import { Button, HStack } from "@chakra-ui/react";
 import React from "react";
-import { FaPlay, FaPause } from "react-icons/fa";
+import { FaPlay, FaPause, FaStepForward, FaStepBackward } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import {
   selectIsPlaying,
@@ -15,7 +15,8 @@ const Control = () => {
   const isPlayling = useSelector(selectIsPlaying);
 
   return (
-    <HStack marginTop={6}>
+    <HStack marginTop={6} zIndex={999} spacing={8}>
+      <FaStepBackward color="white" size={22}/>
       <Button
         onClick={() =>
           isPlayling ? dispatch(stopVideo()) : dispatch(startVideo())
@@ -27,6 +28,7 @@ const Control = () => {
           else={() => <FaPause />}
         />
       </Button>
+      <FaStepForward color="white"  size={22}/>
     </HStack>
   );
 };

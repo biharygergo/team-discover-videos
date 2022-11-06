@@ -215,8 +215,6 @@ export const Sequence = () => {
   }, [duration]);
 
   const onDrag = (event: any) => {
-    console.log("onDrag");
-
     dispatch(updateProgress({ playedRatio: event.x / width }));
   };
 

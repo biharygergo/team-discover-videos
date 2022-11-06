@@ -1,17 +1,18 @@
 import _ from "lodash-es";
 
-enum Action {
+export enum Action {
   Replace = "replace",
   Add = "add",
   Delete = "delete",
   Translate = "translate"
 }
 
-enum FootageType {
+export enum FootageType {
   Text = "text",
   Video = "video",
   Audio = "audio",
   Solid = "solid",
+  Image = "image",
 }
 
 export interface Command {
@@ -51,11 +52,16 @@ const typeWords = [
   },
   {
     type: FootageType.Solid,
-    words: ["background", "solid"],
+    words: [],
+    // words: ["background", "solid"],
   },
   {
     type: FootageType.Text,
     words: ["text", "label", "caption", "title"],
+  },
+  {
+    type: FootageType.Image,
+    words: ["image", "picture"],
   },
 ];
 
@@ -100,7 +106,7 @@ export const processCommand = (rawText: string): Command | null => {
   if (
     !actionWord ||
     !footageType ||
-    (actionWord.action !== Action.Delete && value === null)
+    (footageType.type === FootageType.Text && value === null)
   ) {
     return null;
   }

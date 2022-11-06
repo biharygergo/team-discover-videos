@@ -39,8 +39,8 @@ const VideoOverlay = () => {
 
     dispatch(addComment({
       id: nanoid(),
-      x: (clickX - overlayX) / size.width,
-      y: (clickY - overlayY) / size.height,
+      x: (clickX - overlayX-10) / size.width,
+      y: (clickY - overlayY-10) / size.height,
       rawText: "",
       state: CommentState.RawInput
     }))
@@ -56,8 +56,8 @@ const VideoOverlay = () => {
       bottom={0}
       zIndex={100}
       onClick={clickHandler}
-      bgColor="red"
-      opacity={0.5}
+      // bgColor="red"
+      opacity={1}
     >
       {comments.map((comment, index) => (
         <CommandPopover comment={comment} size={size} key={index}/>

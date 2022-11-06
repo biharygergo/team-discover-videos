@@ -13,6 +13,7 @@ export const fetchAssets = createAsyncThunk("assets/fetchAll", async () => {
 enum AssetType {
   Video = "video",
   Audio = "audio",
+  Image = "image"
 }
 
 export interface Assett {

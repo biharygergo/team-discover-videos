@@ -28,24 +28,8 @@ export interface CommentsState {
 
 const initialState: CommentsState = {
   openComment: null,
-  byId: {
-    "comment-001": {
-      id: "comment-001",
-      x: 0.2,
-      y: 0.4,
-      rawText: "replace text with pelooo",
-      state: CommentState.RawInput,
-      //   isOpen: true
-    },
-    "comment-002": {
-      id: "comment-002",
-      x: 0.5,
-      y: 0.8,
-      rawText: "222 replace text with pelooo",
-      state: CommentState.RawInput,
-      // isOpen: false
-    },
-  },
+  byId: {}
+
 };
 
 export const commentsSlice = createSlice({
@@ -68,6 +52,9 @@ export const commentsSlice = createSlice({
     },
     openComment: (state, action: PayloadAction<string>) => {
       state.openComment = action.payload;
+    },
+    deleteComment: (state, action: PayloadAction<string>) => {
+      state.byId = _.omit(state.byId, action.payload);
     },
     closeComment: (state) => {
       if (state.openComment === null) {
@@ -101,7 +88,7 @@ export const commentsSlice = createSlice({
   //   },
 });
 
-export const { addComment, closeComment, openComment, updateComment } =
+export const { addComment, closeComment, openComment, updateComment, deleteComment } =
   commentsSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
