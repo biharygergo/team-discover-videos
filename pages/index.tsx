@@ -16,12 +16,14 @@ import {
   useColorModeValue,
   createIcon,
   Avatar,
+  Link,
 } from "@chakra-ui/react";
 import { useAppDispatch } from "../redux/store";
 import axios from "axios";
 import { BACKEND_URL } from "../config";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 
 export default function Home() {
   const router = useRouter();
@@ -60,10 +62,10 @@ export default function Home() {
         </Heading>
         <Text color={"white"}>
           This video editor will create your own copy of a sandbox project,
-          where you are able to play around with many of the editor&apos;s features.
-          Try changing text, replacing footage, images or audio. You can explore
-          more exotic features, such as our Google Translate integration. What
-          are you waiting for?
+          where you are able to play around with many of the editor&apos;s
+          features. Try changing text, replacing footage, images or audio. You
+          can explore more exotic features, such as our Google Translate
+          integration. What are you waiting for?
         </Text>
         <Stack
           direction={"column"}
@@ -82,11 +84,11 @@ export default function Home() {
             }}
             onClick={onCreateSandboxClick}
             disabled={disabled}
-            size='lg'
+            size="lg"
           >
             Create Sandbox
           </Button>
-          <Box>
+          {/* <Box>
             <Icon
               as={Arrow}
               color="white"
@@ -105,6 +107,15 @@ export default function Home() {
             >
               Yes, click this button.
             </Text>
+          </Box> */}
+          <Box>
+            <Text color={"gray.400"}>
+              If it's your first time here, please validate access to NgRok
+              first.
+            </Text>
+            <Link href={`${BACKEND_URL}/api/redirect`} isExternal color={'white'}>
+              Validate access <ExternalLinkIcon mx="2px" />
+            </Link>
           </Box>
         </Stack>
       </Stack>
@@ -125,8 +136,8 @@ export default function Home() {
           maxW={"3xl"}
           color="gray.100"
         >
-          This is the most amazing Video Editor I&apos;ve seen (that was created in
-          less than 48 hours). One could say it is production-ready, but they
+          This is the most amazing Video Editor I&apos;ve seen (that was created
+          in less than 48 hours). One could say it is production-ready, but they
           would be lying.
         </Text>
         <Box textAlign={"center"}>
@@ -137,11 +148,10 @@ export default function Home() {
             mb={2}
           />
 
-          <Text fontWeight={600} color="gray.100">Jenny Wilson</Text>
-          <Text
-            fontSize={"sm"}
-            color="gray.300"
-          >
+          <Text fontWeight={600} color="gray.100">
+            Jenny Wilson
+          </Text>
+          <Text fontSize={"sm"} color="gray.300">
             Fictional Customer
           </Text>
         </Box>
