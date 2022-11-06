@@ -16,19 +16,39 @@ export const updateVideo = createAsyncThunk(
   "videos/fetchByIdStatus",
   async (command: Command, thunkAPI) => {
     const projectId = (thunkAPI.getState() as AppState).videos.projectId;
-    const response = await axios.post(`${BACKEND_URL}/api/${projectId}`, command, {
-      headers: { "ngrok-skip-browser-warning": "69420" },
-    }); // TODO: url from env
+    const response = await axios.put(
+      `${BACKEND_URL}/api/projects/${projectId}`,
+      command,
+      {
+        headers: { "ngrok-skip-browser-warning": "69420" },
+      }
+    ); // TODO: url from env
+    return response.data;
+  }
+);
+
+export const pollVideo = createAsyncThunk(
+  "videos/pollVideo",
+  async (_, thunkAPI) => {
+    const projectId = (thunkAPI.getState() as AppState).videos.projectId;
+    const response = await axios.get(
+      `${BACKEND_URL}/api/projects/${projectId}/video`,
+      {
+        headers: { "ngrok-skip-browser-warning": "69420" },
+      }
+    );
+
     return response.data;
   }
 );
 
 enum VideoStatus {
   Rendering = "rendering",
-  Ready = "Ready",
+  Done = "done",
 }
 
 interface VideosState {
+  path: string | null;
   status: VideoStatus;
   content: Sequence;
   playedRatio: number;
@@ -40,12 +60,12 @@ interface VideosState {
 const originalProject = xml2js(originalXml, { compact: true }) as ProjectObject;
 
 const initialState = {
-  status: VideoStatus.Ready,
+  status: VideoStatus.Done,
   content: originalProject.xmeml.sequence,
   playedRatio: 0,
   playedSeconds: 0,
   isPlaying: false,
-  projectId: 'final_project' // TODO: put this to slug
+  projectId: "final_project", // TODO: put this to slug
 } as VideosState;
 
 // Then, handle actions in your reducers:
@@ -77,7 +97,17 @@ export const videosSlice = createSlice({
     // Add reducers for additional action types here, and handle loading state as needed
     builder.addCase(updateVideo.fulfilled, (state, action) => {
       // Add video to the state array
-      state.content = action.payload;
+      if (action.payload.success === true) {
+        const updatedProject = xml2js(action.payload.updatedProject, {
+          compact: true,
+        }) as ProjectObject;
+        state.content = updatedProject.xmeml.sequence;
+      }
+    });
+
+    builder.addCase(pollVideo.fulfilled, (state, action) => {
+      state.status = action.payload.status;
+      state.path = action.payload.latestFile;
     });
   },
 });
@@ -87,3 +117,4 @@ export const { updateProgress, startVideo, stopVideo } = videosSlice.actions;
 export const selectMedia = (state: AppState) => state.videos.content;
 export const selectIsPlaying = (state: AppState) => state.videos.isPlaying;
 export const selectPlayedRatio = (state: AppState) => state.videos.playedRatio;
+export const selectPath = (state: AppState) => state.videos.path;

@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import { useAppDispatch } from "../../redux/store";
 import {
   selectIsPlaying,
+  selectPath,
   selectPlayedRatio,
   startVideo,
   stopVideo,
@@ -10,6 +11,7 @@ import {
 } from "../../redux/slices/video";
 import { useSelector } from "react-redux";
 import ReactPlayer from "react-player";
+import { BACKEND_URL } from "../../config";
 // const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 
 interface Props {}
@@ -18,6 +20,7 @@ export const Video = (props: Props) => {
   const dispatch = useAppDispatch();
   const isPlaying = useSelector(selectIsPlaying);
   const playedRatio = useSelector(selectPlayedRatio);
+  const path = useSelector(selectPath);
   const videoRef = useRef(null);
 
   const getPlayedRatio = () => {
@@ -59,6 +62,7 @@ export const Video = (props: Props) => {
       ref={videoRef}
       // url={"https://98f7-2001-708-150-10-00-635c.eu.ngrok.io/api/projects/final_project/video?media=1"}
       url={"./video/output/video.mp4"}
+      // url={`${BACKEND_URL}/api/projects/final_project/video?media=1&path=${path}`}
       width="90%"
       height="90%"
       playing={isPlaying}

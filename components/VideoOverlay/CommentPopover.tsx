@@ -37,7 +37,7 @@ import { useSelector } from "react-redux";
 import { ClientRequest } from "http";
 import { processCommand } from "../../ai/command-processor";
 import If from "../If";
-import { updateVideo } from "../../redux/slices/video";
+import { pollVideo, updateVideo } from "../../redux/slices/video";
 
 interface Props {
   comment: Comment;
@@ -91,6 +91,8 @@ export const CommandPopover = ({ comment, size }: Props) => {
           },
         })
       );
+
+      dispatch(pollVideo())
     }
   });
 

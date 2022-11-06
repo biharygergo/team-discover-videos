@@ -21,26 +21,38 @@ import _ from "lodash-es";
 import { useElementSize } from "usehooks-ts";
 import Draggable from "react-draggable";
 import { useAppDispatch } from "../../redux/store";
-import { TbGripVertical, TbLock, TbEye } from "react-icons/tb";
+import {
+  TbGripVertical,
+  TbLock,
+  TbEye,
+  TbVideo,
+  TbMusic,
+} from "react-icons/tb";
+import { FaMapMarker } from "react-icons/fa";
 
 const timelineHeight = 62;
 const frameRate = 30;
 const trackInfoWidth = 200;
 const getIntValue = (obj: any): number => parseInt(obj["_text"], 10);
+const videoColors = ["#52EAEB", "#EB6E52", "#F8E02C"];
 
 const Track = ({
   track,
   ratio,
-  type
+  type,
+  index: trackIndex,
 }: //   width,
 {
   track: Track;
   ratio: number;
-  type: string
-  //   width: number;
+  type: string;
+  index: number;
 }) => {
   //   const ratio = width / duration;
-  const scale = useCallback((value: number) => value * (ratio - 0.1), [ratio]);
+  const scale = useCallback(
+    (value: number) => value * (ratio - 0.105),
+    [ratio]
+  );
 
   const { clips, gaps } = useMemo(() => {
     if (track.clipitem === null || track.clipitem === undefined) {
@@ -93,24 +105,46 @@ const Track = ({
         </Text>
         <Spacer />
         <TbLock color="#8E8E8E" size={18} />
-        <Icon as={TbEye} fontSize={18} color="#8E8E8E" marginLeft={2} marginRight={4}></Icon>
-        <Box  bgColor="#0C0C0C" w={4} h={timelineHeight}/>
+        <Icon
+          as={TbEye}
+          fontSize={18}
+          color="#8E8E8E"
+          marginLeft={2}
+          marginRight={4}
+        ></Icon>
+        <Box bgColor="#0C0C0C" w={4} h={timelineHeight} />
       </Flex>
       <If
         condition={track.clipitem !== null}
         then={() =>
           clips.map((clip, index) => (
-            <Box
-              bgColor={type === 'Video' ? "#EB6E52" : '#28E29F'}
+            <Flex
+              bgColor={type === "Video" ? videoColors[trackIndex] : "#28E29F"}
+              boxShadow={`${
+                type === "Video" ? videoColors[trackIndex] : "#28E29F"
+              } 0px 0px 8px`}
               borderRadius={6}
               //   maxW={10}
               marginLeft={scale(gaps[index])}
+              marginRight={1}
               marginTop={1}
               key={index}
-              width={scale(getIntValue(clip.end) - getIntValue(clip.start))}
+              width={scale(getIntValue(clip.end) - getIntValue(clip.start)) - 1}
               height={timelineHeight - 8}
-              border="1px black solid"
-            ></Box>
+              alignItems="center"
+              paddingLeft={3}
+              // border="1px black solid"
+            >
+              <Icon
+                as={type === "Video" ? TbVideo : TbMusic}
+                fontSize={18}
+                color="#2B2B2B"
+                marginRight={1}
+              ></Icon>
+              <Text fontSize={12} color="#0C0C0C">
+                {clip.name["_text"]}
+              </Text>
+            </Flex>
           ))
         }
       />
@@ -121,14 +155,22 @@ const Track = ({
 const TimeIndicator = () => {
   return (
     <Box
-      bgColor="black"
+      bgColor="white"
       //   position="absolute"
       width={1}
-      height={800}
+      height={"57vh"}
       // left={playedRatio * width}
       bottom={0}
       // transition={isPlaying ? "all 0.05s": 'none' }
-    ></Box>
+    >
+      <Icon
+        as={FaMapMarker}
+        fontSize={34}
+        color="white"
+        marginLeft={"-15px"}
+        marginTop={"-30px"}
+      ></Icon>
+    </Box>
   );
 };
 
@@ -137,12 +179,24 @@ const Tracks = ({ video, audio, ratio }: any) => {
     <>
       <Flex direction="column-reverse">
         {video.map((track: Track, index: number) => (
-          <Track track={track} key={index} ratio={ratio}type="Video" />
+          <Track
+            track={track}
+            key={index}
+            ratio={ratio}
+            type="Video"
+            index={index}
+          />
         ))}
       </Flex>
       <Flex direction="column">
         {audio.map((track: Track, index: number) => (
-          <Track track={track} key={index} ratio={ratio} type="Audio"/>
+          <Track
+            track={track}
+            key={index}
+            ratio={ratio}
+            type="Audio"
+            index={index}
+          />
         ))}
       </Flex>
     </>

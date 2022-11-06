@@ -5,13 +5,13 @@ import useKeypress from "react-use-keypress";
 import styles from "../styles/Home.module.css";
 import { Flex, Spacer, AspectRatio, Box, Text, Button } from "@chakra-ui/react";
 import Video from "../components/Video/wrapper";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import VideoOverlay from "../components/VideoOverlay";
 import { useSelector } from "react-redux";
 import { selectOpenComment } from "../redux/slices/comments";
 import Sequence from "../components/Timeline";
 import { useAppDispatch } from "../redux/store";
-import { selectIsPlaying, startVideo, stopVideo } from "../redux/slices/video";
+import { pollVideo, selectIsPlaying, startVideo, stopVideo } from "../redux/slices/video";
 import Assets from "../components/Assets";
 import Control from "../components/Control";
 
@@ -19,6 +19,13 @@ export default function Home() {
   const dispatch = useAppDispatch();
   const isPlaying = useSelector(selectIsPlaying);
   const openCommentId = useSelector(selectOpenComment);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+        dispatch(pollVideo())
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useKeypress(" ", () => {
     console.log("space pressed", openCommentId, isPlaying);
@@ -40,7 +47,7 @@ export default function Home() {
           <Text>Box 3</Text>
           <Assets />
         </Box>
-        <Box flex="1" bg="#0C0C0C">
+        <Box flex="1.5" bg="#0C0C0C">
           <Sequence />
         </Box>
       </Flex>

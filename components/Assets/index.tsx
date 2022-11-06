@@ -17,8 +17,8 @@ const Assets = () => {
   return (
     <Grid templateColumns="repeat(4, 1fr)" gap={6}>
       {Object.values(assets).map((asset: Assett) => (
-        <GridItem w="100%"  bg="blue.500" key={asset.id}>
-          <img src={`${BACKEND_URL}${asset.thumbnailUrl}`} />
+        <GridItem w="12" bg="blue.500" key={asset.id}>
+          <img src={`${BACKEND_URL}${asset.thumbnailUrl}`} maxW={1} />
           <Text>{asset.id}</Text>
         </GridItem>
       ))}
