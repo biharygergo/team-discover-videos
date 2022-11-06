@@ -39,7 +39,7 @@ export default function Home() {
 
     const projectId = response.data.projectId;
     dispatcher(setProjectId({ projectId }));
-    router.push(`/${projectId}`);
+    router.push(`/projects/${projectId}`);
     setDisabled(false);
   };
 

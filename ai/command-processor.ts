@@ -44,7 +44,7 @@ const actionWords = [
 const typeWords = [
   {
     type: FootageType.Video,
-    words: ["media", "video", "footage"],
+    words: ["media", "video", "footage", 'shot'],
   },
   {
     type: FootageType.Audio,
