@@ -114,7 +114,8 @@ export default function Home() {
           <Box>
             <Text color={"gray.400"}>
               If it&apos;s your first time here, please validate access to NgRok
-              first.
+              first. You will need to refresh the page after the initial load,
+              it is a bug, sorry.
             </Text>
             <Link
               href={`${BACKEND_URL}/api/redirect`}

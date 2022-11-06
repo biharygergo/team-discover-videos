@@ -69,6 +69,8 @@ export const Video = (props: Props) => {
     );
   };
 
+  // if (!path) return null;
+
   return (
     <ReactPlayer
       ref={videoRef}
