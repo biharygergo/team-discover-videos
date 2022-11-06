@@ -11,7 +11,12 @@ import { useSelector } from "react-redux";
 import { selectOpenComment } from "../redux/slices/comments";
 import Sequence from "../components/Timeline";
 import { useAppDispatch } from "../redux/store";
-import { pollVideo, selectIsPlaying, startVideo, stopVideo } from "../redux/slices/video";
+import {
+  pollVideo,
+  selectIsPlaying,
+  startVideo,
+  stopVideo,
+} from "../redux/slices/video";
 import Assets from "../components/Assets";
 import Control from "../components/Control";
 
@@ -22,7 +27,7 @@ export default function Home() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-        dispatch(pollVideo())
+      dispatch(pollVideo());
     }, 1000);
     return () => clearInterval(interval);
   }, []);
@@ -43,9 +48,16 @@ export default function Home() {
   return (
     <Flex direction="row" height="100vh">
       <Flex direction="column" flex="1">
-        <Box flex="1">
-          <Text>Box 3</Text>
+        <Box flex="1" overflowY={"scroll"} position="relative">
           <Assets />
+          <Box
+            height={100}
+            background="linear-gradient(0deg, rgba(12,12,12,1) 0%, rgba(12,12,12,0) 35%)"
+            position={"sticky"}
+            bottom={0}
+            left={0}
+            width="100%"
+          ></Box>
         </Box>
         <Box flex="1.5" bg="#0C0C0C">
           <Sequence />
