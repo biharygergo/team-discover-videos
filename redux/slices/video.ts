@@ -13,7 +13,7 @@ import { BACKEND_URL } from "../../config";
 
 // First, create the thunk
 export const updateVideo = createAsyncThunk(
-  "videos/fetchByIdStatus",
+  "videos/updateVideo",
   async (command: Command, thunkAPI) => {
     const projectId = (thunkAPI.getState() as AppState).videos.projectId;
     const response = await axios.put(
@@ -26,6 +26,21 @@ export const updateVideo = createAsyncThunk(
     return response.data;
   }
 );
+
+export const getVideo = createAsyncThunk(
+  "videos/getVideo",
+  async (_, thunkAPI) => {
+    const projectId = (thunkAPI.getState() as AppState).videos.projectId;
+    const response = await axios.get(
+      `${BACKEND_URL}/api/projects/${projectId}`,
+      {
+        headers: { "ngrok-skip-browser-warning": "69420" },
+      }
+    ); // TODO: url from env
+    return response.data;
+  }
+);
+
 
 export const pollVideo = createAsyncThunk(
   "videos/pollVideo",
@@ -110,6 +125,15 @@ export const videosSlice = createSlice({
         state.content = updatedProject.xmeml.sequence;
       }
     });
+
+    builder.addCase(getVideo.fulfilled, (state, action) => {
+      // Add video to the state array
+        const project = xml2js(action.payload.project, {
+          compact: true,
+        }) as ProjectObject;
+        state.content = project.xmeml.sequence;
+      });
+    
 
     builder.addCase(pollVideo.fulfilled, (state, action) => {
       state.status = action.payload.status;
