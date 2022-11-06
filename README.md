@@ -12,6 +12,12 @@ You can check out the flow by visiting our demo website, where a new sandbox pro
 
 [DEMO APP](https://bit.ly/TeamDiscover)
 
+# Configuration
+There is an environment file `.env.local` that needs to contain the renderer API's URL, like this:
+```
+NEXT_PUBLIC_BACKEND_URL=https://9b84-195-148-124-93.eu.ngrok.io
+```
+
 ## Team
 
 Good friends from Hungary, having fun at hackathons:)

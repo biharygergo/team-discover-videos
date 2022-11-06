@@ -24,9 +24,11 @@ import { BACKEND_URL } from "../config";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { setProjectId } from "../redux/slices/video";
 
 export default function Home() {
   const router = useRouter();
+  const dispatcher = useAppDispatch();
   const [disabled, setDisabled] = useState<boolean>(false);
 
   const onCreateSandboxClick = async () => {
@@ -36,6 +38,7 @@ export default function Home() {
     });
 
     const projectId = response.data.projectId;
+    dispatcher(setProjectId({ projectId }));
     router.push(`/${projectId}`);
     setDisabled(false);
   };
@@ -113,7 +116,11 @@ export default function Home() {
               If it's your first time here, please validate access to NgRok
               first.
             </Text>
-            <Link href={`${BACKEND_URL}/api/redirect`} isExternal color={'white'}>
+            <Link
+              href={`${BACKEND_URL}/api/redirect`}
+              isExternal
+              color={"white"}
+            >
               Validate access <ExternalLinkIcon mx="2px" />
             </Link>
           </Box>

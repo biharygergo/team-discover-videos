@@ -50,7 +50,7 @@ enum VideoStatus {
 interface VideosState {
   path: string | null;
   status: VideoStatus;
-  content: Sequence;
+  content: Sequence | null;
   playedRatio: number;
   playedSeconds: number;
   isPlaying: boolean;
@@ -61,7 +61,7 @@ const originalProject = xml2js(originalXml, { compact: true }) as ProjectObject;
 
 const initialState = {
   status: VideoStatus.Done,
-  content: originalProject.xmeml.sequence,
+  content: null,
   playedRatio: 0,
   playedSeconds: 0,
   isPlaying: false,
@@ -73,6 +73,9 @@ export const videosSlice = createSlice({
   name: "videos",
   initialState,
   reducers: {
+    setProjectId: (state, action: PayloadAction<{ projectId: string }>) => {
+      state.projectId = action.payload.projectId;
+    },
     startVideo: (state) => {
       console.log("startVideo");
 
@@ -88,8 +91,7 @@ export const videosSlice = createSlice({
     ) => {
       state.playedRatio = action.payload.playedRatio;
 
-      console.log('updateProgress',action.payload.playedRatio );
-      
+      console.log("updateProgress", action.payload.playedRatio);
 
       if (action.payload.playedSeconds) {
         state.playedSeconds = action.payload.playedSeconds;
@@ -116,7 +118,8 @@ export const videosSlice = createSlice({
   },
 });
 
-export const { updateProgress, startVideo, stopVideo } = videosSlice.actions;
+export const { updateProgress, startVideo, stopVideo, setProjectId } =
+  videosSlice.actions;
 
 export const selectMedia = (state: AppState) => state.videos.content;
 export const selectIsPlaying = (state: AppState) => state.videos.isPlaying;

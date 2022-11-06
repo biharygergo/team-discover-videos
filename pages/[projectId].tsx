@@ -14,18 +14,23 @@ import { useAppDispatch } from "../redux/store";
 import {
   pollVideo,
   selectIsPlaying,
+  setProjectId,
   startVideo,
   stopVideo,
 } from "../redux/slices/video";
 import Assets from "../components/Assets";
 import Control from "../components/Control";
+import { useRouter } from "next/router";
 
 export default function Home() {
   const dispatch = useAppDispatch();
   const isPlaying = useSelector(selectIsPlaying);
   const openCommentId = useSelector(selectOpenComment);
+  const router = useRouter();
 
   useEffect(() => {
+    const projectId = router.query.projectId;
+    dispatch(setProjectId({projectId: projectId as string}));
     const interval = setInterval(() => {
       dispatch(pollVideo());
     }, 1000);
