@@ -15,7 +15,7 @@ import {
 import { Image, Text } from "@chakra-ui/react";
 import { BACKEND_URL } from "../../config";
 import { AddIcon, Icon } from "@chakra-ui/icons";
-import IoMdPhotos from "react-icons/io";
+import {IoMdPhotos} from "react-icons/io";
 
 import {
   TbGripVertical,
@@ -25,7 +25,7 @@ import {
   TbMusic,
 } from "react-icons/tb";
 
-import ImFilePicture from "react-icons/im";
+import {ImFilePicture} from "react-icons/im";
 
 const icons = {
   video: TbVideo,
