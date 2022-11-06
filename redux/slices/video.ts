@@ -29,7 +29,7 @@ export const updateVideo = createAsyncThunk(
 
 export const getVideo = createAsyncThunk(
   "videos/getVideo",
-  async (projectId, thunkAPI) => {
+  async (projectId: string, thunkAPI) => {
     console.log('getVideo', projectId);
     
     // const projectId = (thunkAPI.getState() as AppState).videos.projectId;
