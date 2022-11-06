@@ -22,7 +22,7 @@ export const Video = (props: Props) => {
 
   const getPlayedRatio = () => {
     if (videoRef.current) {
-      return videoRef.current.getCurrentTime() / videoRef.current.getDuration();
+      return (videoRef.current as any).getCurrentTime() / (videoRef.current as any).getDuration();
     }
     return 0;
   };
@@ -41,7 +41,7 @@ export const Video = (props: Props) => {
 
   useEffect(() => {
     if (!isPlaying && videoRef.current) {
-      videoRef.current.seekTo(playedRatio);
+      (videoRef.current as any).seekTo(playedRatio);
     }
   }, [playedRatio, isPlaying]);
 

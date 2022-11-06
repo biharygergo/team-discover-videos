@@ -136,12 +136,12 @@ const Tracks = ({ video, audio, ratio }: any) => {
   return (
     <>
       <Flex direction="column-reverse">
-        {video.map((track, index) => (
+        {video.map((track: Track, index: number) => (
           <Track track={track} key={index} ratio={ratio}type="Video" />
         ))}
       </Flex>
       <Flex direction="column">
-        {audio.map((track, index) => (
+        {audio.map((track: Track, index: number) => (
           <Track track={track} key={index} ratio={ratio} type="Audio"/>
         ))}
       </Flex>
@@ -160,7 +160,7 @@ export const Sequence = () => {
     return getIntValue(duration);
   }, [duration]);
 
-  const onDrag = (event) => {
+  const onDrag = (event: any) => {
     console.log("onDrag");
 
     dispatch(updateProgress({ playedRatio: event.x / width }));
@@ -175,7 +175,7 @@ export const Sequence = () => {
       video: media.video.track.filter((track) => track.clipitem),
       audio: media.audio.track.filter((track) => track.clipitem),
     };
-  }, [media.tracks]);
+  }, [(media as any).tracks]);
 
   //   const ratio = useThrottleFn(value => width / durationFrame, 200, [width]);
 

@@ -59,7 +59,7 @@ export default function Home() {
         </Heading>
         <Text color={"gray.500"}>
           This video editor will create your own copy of a sandbox project,
-          where you are able to play around with many of the editor's features.
+          where you are able to play around with many of the editor&apos;s features.
           Try changing text, replacing footage, images or audio. You can explore
           more exotic features, such as our Google Translate integration. What
           are you waiting for?
@@ -121,8 +121,8 @@ export default function Home() {
           textAlign={"center"}
           maxW={"3xl"}
         >
-          This is the most amazing Video Editor I've seen (that was created in
-          less than 48 hours). One could say it's production-ready, but they
+          This is the most amazing Video Editor I&apos;ve seen (that was created in
+          less than 48 hours). One could say it is production-ready, but they
           would be lying.
         </Text>
         <Box textAlign={"center"}>
@@ -130,7 +130,6 @@ export default function Home() {
             src={
               "https://images.unsplash.com/photo-1586297135537-94bc9ba060aa?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80"
             }
-            alt={"Jenny Wilson"}
             mb={2}
           />
 
