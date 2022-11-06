@@ -29,8 +29,10 @@ export const updateVideo = createAsyncThunk(
 
 export const getVideo = createAsyncThunk(
   "videos/getVideo",
-  async (_, thunkAPI) => {
-    const projectId = (thunkAPI.getState() as AppState).videos.projectId;
+  async (projectId, thunkAPI) => {
+    console.log('getVideo', projectId);
+    
+    // const projectId = (thunkAPI.getState() as AppState).videos.projectId;
     const response = await axios.get(
       `${BACKEND_URL}/api/projects/${projectId}`,
       {
@@ -80,7 +82,7 @@ const initialState = {
   playedRatio: 0,
   playedSeconds: 0,
   isPlaying: false,
-  projectId: "final_project", // TODO: put this to slug
+  projectId: null, // TODO: put this to slug
 } as VideosState;
 
 // Then, handle actions in your reducers:
@@ -149,3 +151,4 @@ export const selectMedia = (state: AppState) => state.videos.content;
 export const selectIsPlaying = (state: AppState) => state.videos.isPlaying;
 export const selectPlayedRatio = (state: AppState) => state.videos.playedRatio;
 export const selectPath = (state: AppState) => state.videos.path;
+export const selectVideoStatus = (state: AppState) => state.videos.status;

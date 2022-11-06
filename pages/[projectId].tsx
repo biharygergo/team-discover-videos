@@ -3,7 +3,16 @@ import Image from "next/image";
 // @ts-ignore
 import useKeypress from "react-use-keypress";
 import styles from "../styles/Home.module.css";
-import { Flex, Spacer, AspectRatio, Box, Text, Button } from "@chakra-ui/react";
+import {BounceLoader} from 'react-spinners';
+import {
+  Flex,
+  Spacer,
+  AspectRatio,
+  Box,
+  Text,
+  Button,
+  Tag,
+} from "@chakra-ui/react";
 import Video from "../components/Video/wrapper";
 import { useEffect, useState } from "react";
 import VideoOverlay from "../components/VideoOverlay";
@@ -12,8 +21,11 @@ import { selectOpenComment } from "../redux/slices/comments";
 import Sequence from "../components/Timeline";
 import { useAppDispatch } from "../redux/store";
 import {
+  getVideo,
   pollVideo,
   selectIsPlaying,
+  selectMedia,
+  selectVideoStatus,
   setProjectId,
   startVideo,
   stopVideo,
@@ -21,21 +33,32 @@ import {
 import Assets from "../components/Assets";
 import Control from "../components/Control";
 import { useRouter } from "next/router";
+import If from "../components/If";
 
 export default function Home() {
   const dispatch = useAppDispatch();
+  const content = useSelector(selectMedia);
   const isPlaying = useSelector(selectIsPlaying);
   const openCommentId = useSelector(selectOpenComment);
   const router = useRouter();
+  const projectId = router.query.projectId;
+  const status = useSelector(selectVideoStatus);
 
   useEffect(() => {
-    const projectId = router.query.projectId;
-    dispatch(setProjectId({projectId: projectId as string}));
+    console.log({ projectId });
+
+    if (projectId) {
+      dispatch(setProjectId({ projectId: projectId as string }));
+      dispatch(getVideo(projectId));
+    }
+
     const interval = setInterval(() => {
-      dispatch(pollVideo());
+      if (projectId) {
+        dispatch(pollVideo());
+      }
     }, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [projectId]);
 
   useKeypress(" ", () => {
     console.log("space pressed", openCommentId, isPlaying);
@@ -50,28 +73,86 @@ export default function Home() {
     // Do something when the user has pressed the Escape key
   });
 
+  if (!content) {
+    return null;
+  }
+
   return (
     <Flex direction="row" height="100vh">
-      <Flex direction="column" flex="1">
-        <Box flex="1" overflowY={"scroll"} position="relative">
+      <Flex direction="column" flex="1" borderRight="4px solid #10110E">
+        <Box
+        // width="100%"
+        >
+          <Flex
+            direction="row"
+            width="100%"
+            height="64px"
+            alignItems="center"
+            bgColor="#1B1A1D"
+            borderBottom="4px solid #10110E"
+          >
+            <img
+              src="logo.png"
+              style={{ height: 40, marginTop: 0, marginLeft: 8 }}
+            />
+            <Spacer />
+            <If
+              condition={status !== "done"}
+              then={() => (
+                <>
+                <BounceLoader speedMultiplier={0.75} color="#DE0030" size={22}/>
+                <Tag
+                  size={"lg"}
+                  variant="outline"
+                  colorScheme="red"
+                  height={8}
+                  marginRight={4}
+                  marginLeft={2}
+                >
+                  Rendering
+                </Tag>
+                </>
+              )}
+              else={() => (
+                <Tag
+                  size={"lg"}
+                  variant="solid"
+                  colorScheme="teal"
+                  height={8}
+                  marginRight={4}
+                >
+                  Video Ready
+                </Tag>
+              )}
+            />
+          </Flex>
+        </Box>
+
+        <Box
+          flex="1"
+          overflowY={"scroll"}
+          position="relative"
+          bgColor="#1B1A1D"
+          borderBottom="4px solid #10110E"
+        >
           <Assets />
-          <Box
+          {/* <Box
             height={100}
-            background="linear-gradient(0deg, rgba(12,12,12,1) 0%, rgba(12,12,12,0) 35%)"
+            background="linear-gradient(0deg, rgba(12,12,12,1) 0%, rgba(12,12,12,0) 85%)"
             position={"sticky"}
             bottom={0}
             left={0}
             width="100%"
-          ></Box>
+          ></Box> */}
         </Box>
-        <Box flex="1.5" bg="#0C0C0C">
+        <Box flex="1" bg="#1B1A1D">
           <Sequence />
         </Box>
       </Flex>
       <Flex
         width="calc(100vh * 9 / 16  + 20px)"
         height="100vh"
-        bgColor="#242424"
+        bgColor="#1B1A1D"
         position="relative"
         // padding={4}
         paddingTop={12}

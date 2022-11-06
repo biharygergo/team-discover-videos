@@ -91,13 +91,16 @@ const Track = ({
       direction="row"
       marginBottom={1}
       overflow="hidden"
+      bgColor="#0C0C0C"
+      borderBottom="1px solid #8E8E8E"
     >
       <Flex
         w={trackInfoWidth}
         padding={4}
         paddingRight={0}
-        bgColor="#242424"
+        bgColor="#1B1A1D"
         alignItems="center"
+        
       >
         <TbGripVertical color="#8E8E8E" size={18} />
         <Text color="#8E8E8E" fontSize={14} marginLeft={2}>
@@ -130,7 +133,7 @@ const Track = ({
               marginTop={1}
               key={index}
               width={scale(getIntValue(clip.end) - getIntValue(clip.start)) - 1}
-              height={timelineHeight - 8}
+              height={timelineHeight - 12}
               alignItems="center"
               paddingLeft={3}
               // border="1px black solid"
@@ -158,7 +161,7 @@ const TimeIndicator = () => {
       bgColor="white"
       //   position="absolute"
       width={1}
-      height={"57vh"}
+      height={"46vh"}
       // left={playedRatio * width}
       bottom={0}
       // transition={isPlaying ? "all 0.05s": 'none' }
@@ -177,7 +180,7 @@ const TimeIndicator = () => {
 const Tracks = ({ video, audio, ratio }: any) => {
   return (
     <>
-      <Flex direction="column-reverse">
+      <Flex direction="column-reverse" borderTop="1px solid #8E8E8E" paddingTop={1}>
         {video.map((track: Track, index: number) => (
           <Track
             track={track}
@@ -287,10 +290,12 @@ export const Sequence = () => {
         )}
       />
 
-      <Text fontSize={24}>{`00:${String(Math.floor(seconds)).padStart(
+      <Box  marginTop={4} marginBottom={4}>
+      <Text fontSize={24} marginLeft={10} color="#52EAEB" as="b">{`00:${String(Math.floor(seconds)).padStart(
         2,
         "0"
       )}:${String((30 * (seconds % 1)).toFixed(0)).padStart(2, "0")}`}</Text>
+      </Box>
       <Flex direction="column" ref={sequenceRef}>
         <Tracks ratio={ratio} video={video} audio={audio} />
       </Flex>
