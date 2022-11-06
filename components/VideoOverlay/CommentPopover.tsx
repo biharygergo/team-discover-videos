@@ -162,7 +162,7 @@ export const CommandPopover = ({ comment, size }: Props) => {
                   <Text color="black">with</Text>
                   <Kbd>{comment.command?.value}</Kbd>
                 </HStack>
-                <Button colorScheme="blue">Confirm</Button>
+                <Button colorScheme="blue" onClick={onConfirm}>Confirm</Button>
               </>
             )}
           />

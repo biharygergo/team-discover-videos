@@ -9,7 +9,7 @@ enum Action {
 
 enum FootageType {
   Text = "text",
-  Video = "media",
+  Video = "video",
   Audio = "audio",
   Solid = "solid",
 }

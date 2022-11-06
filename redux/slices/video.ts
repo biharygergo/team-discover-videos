@@ -3,14 +3,22 @@ import axios from "axios";
 import { Command } from "../../ai/command-processor";
 import { xml2js, xml2json } from "xml-js";
 import { originalXml } from "../../data/project";
-import { ProjectObject, SequenceMedia } from "../../interfaces/project";
+import {
+  ProjectObject,
+  Sequence,
+  SequenceMedia,
+} from "../../interfaces/project";
 import { AppState } from "../store";
+import { BACKEND_URL } from "../../config";
 
 // First, create the thunk
 export const updateVideo = createAsyncThunk(
   "videos/fetchByIdStatus",
   async (command: Command, thunkAPI) => {
-    const response = await axios.post("", command); // TODO: url from env
+    const projectId = (thunkAPI.getState() as AppState).videos.projectId;
+    const response = await axios.post(`${BACKEND_URL}/api/${projectId}`, command, {
+      headers: { "ngrok-skip-browser-warning": "69420" },
+    }); // TODO: url from env
     return response.data;
   }
 );
@@ -22,21 +30,22 @@ enum VideoStatus {
 
 interface VideosState {
   status: VideoStatus;
-  content: SequenceMedia;
+  content: Sequence;
   playedRatio: number;
   playedSeconds: number;
   isPlaying: boolean;
+  projectId: string | null;
 }
 
 const originalProject = xml2js(originalXml, { compact: true }) as ProjectObject;
-console.log(originalProject.xmeml.sequence.media);
 
 const initialState = {
   status: VideoStatus.Ready,
-  content: originalProject.xmeml.sequence.media,
+  content: originalProject.xmeml.sequence,
   playedRatio: 0,
   playedSeconds: 0,
   isPlaying: false,
+  projectId: 'final_project' // TODO: put this to slug
 } as VideosState;
 
 // Then, handle actions in your reducers:

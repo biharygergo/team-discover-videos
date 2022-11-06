@@ -1,5 +1,13 @@
-import { VStack, Box, HStack, Flex } from "@chakra-ui/react";
-import React, { useMemo } from "react";
+import {
+  VStack,
+  Box,
+  HStack,
+  Flex,
+  Text,
+  Spacer,
+  Icon,
+} from "@chakra-ui/react";
+import React, { useMemo, useCallback } from "react";
 import { useSelector } from "react-redux";
 import {
   selectIsPlaying,
@@ -13,14 +21,27 @@ import _ from "lodash-es";
 import { useElementSize } from "usehooks-ts";
 import Draggable from "react-draggable";
 import { useAppDispatch } from "../../redux/store";
+import { TbGripVertical, TbLock, TbEye } from "react-icons/tb";
 
-const ratio = 1.3;
-const scale = (value: number) => value * ratio;
-const timelineHeight = 50;
-
+const timelineHeight = 62;
+const frameRate = 30;
+const trackInfoWidth = 200;
 const getIntValue = (obj: any): number => parseInt(obj["_text"], 10);
 
-const Track = ({ track }: { track: Track }) => {
+const Track = ({
+  track,
+  ratio,
+  type
+}: //   width,
+{
+  track: Track;
+  ratio: number;
+  type: string
+  //   width: number;
+}) => {
+  //   const ratio = width / duration;
+  const scale = useCallback((value: number) => value * (ratio - 0.1), [ratio]);
+
   const { clips, gaps } = useMemo(() => {
     if (track.clipitem === null || track.clipitem === undefined) {
       return { clips: [], gaps: [] };
@@ -52,22 +73,42 @@ const Track = ({ track }: { track: Track }) => {
 
   return (
     <Flex
-      width="100%"
+      maxW="100%"
       height={timelineHeight}
-      bgColor="blue"
+      // bgColor="blue"
       direction="row"
-      marginBottom={2}
+      marginBottom={1}
+      overflow="hidden"
     >
+      <Flex
+        w={trackInfoWidth}
+        padding={4}
+        paddingRight={0}
+        bgColor="#242424"
+        alignItems="center"
+      >
+        <TbGripVertical color="#8E8E8E" size={18} />
+        <Text color="#8E8E8E" fontSize={14} marginLeft={2}>
+          {type}
+        </Text>
+        <Spacer />
+        <TbLock color="#8E8E8E" size={18} />
+        <Icon as={TbEye} fontSize={18} color="#8E8E8E" marginLeft={2} marginRight={4}></Icon>
+        <Box  bgColor="#0C0C0C" w={4} h={timelineHeight}/>
+      </Flex>
       <If
         condition={track.clipitem !== null}
         then={() =>
           clips.map((clip, index) => (
             <Box
-              bgColor="red"
+              bgColor={type === 'Video' ? "#EB6E52" : '#28E29F'}
+              borderRadius={6}
+              //   maxW={10}
               marginLeft={scale(gaps[index])}
+              marginTop={1}
               key={index}
               width={scale(getIntValue(clip.end) - getIntValue(clip.start))}
-              height={timelineHeight}
+              height={timelineHeight - 8}
               border="1px black solid"
             ></Box>
           ))
@@ -91,16 +132,61 @@ const TimeIndicator = () => {
   );
 };
 
+const Tracks = ({ video, audio, ratio }: any) => {
+  return (
+    <>
+      <Flex direction="column-reverse">
+        {video.map((track, index) => (
+          <Track track={track} key={index} ratio={ratio}type="Video" />
+        ))}
+      </Flex>
+      <Flex direction="column">
+        {audio.map((track, index) => (
+          <Track track={track} key={index} ratio={ratio} type="Audio"/>
+        ))}
+      </Flex>
+    </>
+  );
+};
+
 export const Sequence = () => {
   const dispatch = useAppDispatch();
-  const media = useSelector(selectMedia);
+  const { media, duration } = useSelector(selectMedia);
   const isPlaying = useSelector(selectIsPlaying);
   const playedRatio = useSelector(selectPlayedRatio);
   const [sequenceRef, { width, height }] = useElementSize();
 
+  const durationFrame = useMemo(() => {
+    return getIntValue(duration);
+  }, [duration]);
+
   const onDrag = (event) => {
+    console.log("onDrag");
+
     dispatch(updateProgress({ playedRatio: event.x / width }));
   };
+
+  const seconds = useMemo(() => {
+    return (durationFrame * playedRatio) / frameRate;
+  }, [durationFrame, playedRatio]);
+
+  const { video, audio } = useMemo(() => {
+    return {
+      video: media.video.track.filter((track) => track.clipitem),
+      audio: media.audio.track.filter((track) => track.clipitem),
+    };
+  }, [media.tracks]);
+
+  //   const ratio = useThrottleFn(value => width / durationFrame, 200, [width]);
+
+  //   console.log(ratio);
+
+  //   (value => value, 200, [value])
+  const ratio = useMemo(() => {
+    return (width - trackInfoWidth) / durationFrame;
+  }, [width, durationFrame]);
+
+  //   console.log({ratio, ratioT});
 
   // TODO: scale factor
   return (
@@ -113,7 +199,7 @@ export const Sequence = () => {
             position="absolute"
             // width={1}
             // height={800}
-            left={playedRatio * width}
+            left={playedRatio * (width - trackInfoWidth) + trackInfoWidth}
             bottom={0}
             transition={isPlaying ? "all 0.05s" : "none"}
           >
@@ -125,6 +211,7 @@ export const Sequence = () => {
             axis="x"
             handle=".handle"
             defaultPosition={{ x: playedRatio * width, y: 0 }}
+            // bounds="parent"
             // style={{}}
             // position={null}
             grid={[25, 25]}
@@ -145,17 +232,12 @@ export const Sequence = () => {
         )}
       />
 
+      <Text fontSize={24}>{`00:${String(Math.floor(seconds)).padStart(
+        2,
+        "0"
+      )}:${String((30 * (seconds % 1)).toFixed(0)).padStart(2, "0")}`}</Text>
       <Flex direction="column" ref={sequenceRef}>
-        <Flex direction="column-reverse">
-          {media.video.track.map((track, index) => (
-            <Track track={track} key={index} />
-          ))}
-        </Flex>
-        <Flex direction="column">
-          {media.audio.track.map((track, index) => (
-            <Track track={track} key={index} />
-          ))}
-        </Flex>
+        <Tracks ratio={ratio} video={video} audio={audio} />
       </Flex>
     </>
   );

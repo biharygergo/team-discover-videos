@@ -2,6 +2,7 @@ import { configureStore, ThunkAction, Action  } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import { commentsSlice } from "./slices/comments";
 import { videosSlice } from "./slices/video";
+import { assetsSlice } from "./slices/assets";
 import { useDispatch } from 'react-redux'
 
 export function makeStore() {
@@ -9,6 +10,7 @@ export function makeStore() {
     reducer: {
       comments: commentsSlice.reducer,
       videos: videosSlice.reducer,
+      assets: assetsSlice.reducer,
     },
   });
 }

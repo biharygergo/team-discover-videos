@@ -3,7 +3,7 @@ import Image from "next/image";
 // @ts-ignore
 import useKeypress from "react-use-keypress";
 import styles from "../styles/Home.module.css";
-import { Flex, Spacer, AspectRatio, Box, Text } from "@chakra-ui/react";
+import { Flex, Spacer, AspectRatio, Box, Text, Button } from "@chakra-ui/react";
 import Video from "../components/Video/wrapper";
 import { useState } from "react";
 import VideoOverlay from "../components/VideoOverlay";
@@ -12,6 +12,8 @@ import { selectOpenComment } from "../redux/slices/comments";
 import Sequence from "../components/Timeline";
 import { useAppDispatch } from "../redux/store";
 import { selectIsPlaying, startVideo, stopVideo } from "../redux/slices/video";
+import Assets from "../components/Assets";
+import Control from "../components/Control";
 
 export default function Home() {
   const dispatch = useAppDispatch();
@@ -23,7 +25,7 @@ export default function Home() {
     if (openCommentId === null) {
       if (isPlaying) {
         dispatch(stopVideo());
-      } else {        
+      } else {
         dispatch(startVideo());
       }
     }
@@ -32,24 +34,33 @@ export default function Home() {
   });
 
   return (
-    <Flex color="white" bgColor="red" direction="row" height="100vh">
+    <Flex direction="row" height="100vh">
       <Flex direction="column" flex="1">
-        <Box flex="1" bg="yellow">
+        <Box flex="1">
           <Text>Box 3</Text>
+          <Assets />
         </Box>
-        <Box flex="1" bg="green">
+        <Box flex="1" bg="#0C0C0C">
           <Sequence />
         </Box>
       </Flex>
-      <Box
-        width="calc(100vh * 9 / 16)"
+      <Flex
+        width="calc(100vh * 9 / 16  + 20px)"
         height="100vh"
-        bgColor="blue"
+        bgColor="#242424"
         position="relative"
+        // padding={4}
+        paddingTop={12}
+        direction="column"
+        alignItems="center"
+        justifyContent="top"
       >
+        {/* <div> */}
         <VideoOverlay />
-        <Video  />
-      </Box>
+        <Video />
+        {/* </div> */}
+        <Control />
+      </Flex>
     </Flex>
   );
 }

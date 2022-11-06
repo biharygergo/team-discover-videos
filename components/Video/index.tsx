@@ -57,11 +57,13 @@ export const Video = (props: Props) => {
   return (
     <ReactPlayer
       ref={videoRef}
-      url="/video/output/greg.mp4"
-      width="100%"
-      height="100%"
+      // url={"https://98f7-2001-708-150-10-00-635c.eu.ngrok.io/api/projects/final_project/video?media=1"}
+      url={"./video/output/video.mp4"}
+      width="90%"
+      height="90%"
       playing={isPlaying}
       loop={false}
+      style={{margin: 'auto', marginBottom: 0, marginTop: 0}}
       controls={false}
       onProgress={onProgress}
       onStart={() => dispatch(startVideo())}
