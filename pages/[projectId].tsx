@@ -147,7 +147,7 @@ export default function Home() {
             width="100%"
           ></Box> */}
         </Box>
-        <Box flex="1" bg="#1B1A1D">
+        <Box flex="1" bg="#1B1A1D" maxWidth="1400px">
           <Sequence />
         </Box>
       </Flex>
