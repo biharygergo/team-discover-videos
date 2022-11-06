@@ -61,8 +61,8 @@ export const Video = (props: Props) => {
     <ReactPlayer
       ref={videoRef}
       // url={"https://98f7-2001-708-150-10-00-635c.eu.ngrok.io/api/projects/final_project/video?media=1"}
-      url={"./video/output/video.mp4"}
-      // url={`${BACKEND_URL}/api/projects/final_project/video?media=1&path=${path}`}
+      // url={"./video/output/video.mp4"}
+      url={`${BACKEND_URL}/api/projects/final_project/video?media=1&path=${path}`}
       width="90%"
       height="90%"
       playing={isPlaying}

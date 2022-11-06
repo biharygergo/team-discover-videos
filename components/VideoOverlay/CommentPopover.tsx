@@ -239,6 +239,7 @@ export const CommandPopover = ({ comment, size }: Props) => {
                           value={text}
                           height={20}
                           style={{ resize: "none" }}
+                          autoFocus
                         />
                         <InputRightElement>
                           <GrReturn color="#8E8E8E" />
